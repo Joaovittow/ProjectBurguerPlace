@@ -5,19 +5,19 @@ const port = 3000
 const app = express()
 app.use(express.json())
 
-const users = []
+const orders = []
 
-const checkUserId = (request, response, next) => {
+const checkOrderId = (request, response, next) => {
     const { id } = request.params
 
-    const index = users.findIndex( user => user.id === id)
+    const index = orders.findIndex( order => order.id === id)
 
     if ( index < 0){
-        return response.status(404).json({ error: "User Not Found"})
+        return response.status(404).json({ error: "Order Not Found"})
     }
 
-    request.userIndex = index
-    request.userId = id
+    request.orderIndex = index
+    request.orderId = id
 
     next()
 }
@@ -32,56 +32,56 @@ const checkRouteMethod = (request, response, next) => {
 app.use(checkRouteMethod)
 
 app.get('/orders', (request, response) => {
-    return response.json(users)
+    return response.json(orders)
 })
 
 app.post('/orders', (request, response) => {
-    const { order, clienteName, price, status } = request.body
+    const { order, clientName, price, status } = request.body
 
-    const user = { id: uuid.v4(), order, clienteName, price, status } 
+    const newOrder = { id: uuid.v4(), order, clientName, price, status } 
 
-    users.push(user)
+    orders.push(newOrder)
 
-    return response.status(201).json(user)
+    return response.status(201).json(newOrder)
 })
 
-app.put('/orders/:id', checkUserId, (request, response) => {
-    const { order, clienteName, price, status } = request.body
-    const index = request.userIndex
-    const id = request.userId
+app.put('/orders/:id', checkOrderId, (request, response) => {
+    const { order, clientName, price, status } = request.body
+    const index = request.orderIndex
+    const id = request.orderId
 
-    const updatedUser = { id, order, clienteName, price, status }
+    const updatedOrder = { id, order, clientName, price, status }
 
-    users[index] = updatedUser
+    orders[index] = updatedOrder
 
-    return response.json(updatedUser)
+    return response.json(updatedOrder)
 })
 
-app.delete('/orders/:id', checkUserId, (request, response) => {
+app.delete('/orders/:id', checkOrderId, (request, response) => {
 
-    const index = request.userIndex
+    const index = request.orderIndex
 
-    users.splice(index, 1)
+    orders.splice(index, 1)
 
     return response.status(204).json()
 })
 
-app.get('/orders/:id', checkUserId, (request, response) => {
-    const  index = request.userIndex
+app.get('/orders/:id', checkOrderId, (request, response) => {
+    const  index = request.orderIndex
 
-    return response.json(users[index])
+    return response.json(orders[index])
 })
 
-app.patch('/orders/:id', checkUserId, (request, response) => {
-    const { order, clienteName, price, status } = request.body
-    const index = request.userIndex
-    const id = request.userId
+app.patch('/orders/:id', checkOrderId, (request, response) => {
+    const { order, clientName, price, status } = request.body
+    const index = request.orderIndex
+    const id = request.orderId
 
-    const updatedUser = { id, order, clienteName, price, status }
+    const updatedOrder = { id, order, clientName, price, status }
 
-    users[index] = updatedUser
+    orders[index] = updatedOrder
 
-    return response.json(updatedUser)
+    return response.json(updatedOrder)
 })
 
 
